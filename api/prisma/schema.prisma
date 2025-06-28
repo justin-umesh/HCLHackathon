@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "mongodb"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+// Created the User
+model User {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  firstName    String
+  lastName     String
+  email String @unique
+  password     String
+
+  createdOn DateTime @default(now())
+  createdBy String
+
+  modifiedOn DateTime @default(now())
+  modifiedBy String
+
+  account Account?
+
+  @@map("users")
+}
+
+model Order {
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  securityDetail  String
+  orderRefNumber  String
+  orderStatus     String
+  transactionType String
+  orderValue      String
+
+  createdOn DateTime @default(now())
+  createdBy String
+
+  @@map("orders")
+}
+
+model Account {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  credit  Int
+  debit   Int
+  balance Int
+
+  createdOn DateTime @default(now())
+  createdBy String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique @db.ObjectId
+
+  @@map("account")
+}
+
+model Security {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name  String
+  value String
+
+   @@map("security")
+}
